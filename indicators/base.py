@@ -1,11 +1,14 @@
+from pandas import DataFrame
+
 
 class Indicator:
-    
-    def get_buy_signals(self):
+
+    def __init__(self, data: DataFrame):
+        self.data = data
+
+    def plot(self):
         raise NotImplementedError
 
-    def get_sell_signals(self):
+    def calculate(self):
         raise NotImplementedError
 
-    def execute(self):
-        raise NotImplementedError

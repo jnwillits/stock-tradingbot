@@ -1,56 +1,31 @@
-from .base import Indicator
-from common.exceptions import IndicatorException
-from enums.signal import Signal
+from indicators import Indicator
+import matplotlib.pyplot as plt
 
 
 class MacdIndicator(Indicator):
-    def __init__(self):
-        self._buys = []
-        self._sells = []
-    
-    def _get_ema(self, data, period):
-        return data.ewm(span=period, adjust=False).mean()
 
-    def get_buy_signals(self, last_result=False):
-        if not self._buys:
-            raise IndicatorException('No buy signal found!')
+    def plot(self, title):
+        if 'MACD' not in self.data:
+            self.calculate()
 
-        if last_result:
-            return self._buys[-1] 
-        else:
-            return self._buys
+        columns = ['MACD', 'SIGNAL']
+        self.data[columns].plot(figsize=(12.2, 4.5))
+        plt.title(title)
+        plt.xlabel('Date')
+        plt.show()
 
-    def get_sell_signals(self, last_result=False):
-        if not self._sells:
-            raise IndicatorException('No sell signal found!')
+    def calculate(
+        self,
+        shortterm_lookback_period=12, 
+        longterm_lookback_period=26, 
+        signal_lookback_period=9
+    ):
+        stlp_emas = self.data['Close'].ewm(span=shortterm_lookback_period, adjust=False).mean()
+        ltlp_emas = self.data['Close'].ewm(span=longterm_lookback_period, adjust=False).mean()
+        macds = stlp_emas - ltlp_emas
+        signals = macds.ewm(span=signal_lookback_period, adjust=False).mean()
 
-        if last_result:
-            return self._sells[-1] 
-        else:
-            return self._sells
+        self.data['MACD'] = macds
+        self.data['SIGNAL'] = signals
 
-    def execute(self, data, shortterm_lookback_period=12, longterm_lookback_period=26):
-        try:
-            crossed = True
-            stlp_emas = self._get_ema(data['Close'], shortterm_lookback_period)
-            ltlp_emas = self._get_ema(data['Close'], longterm_lookback_period)
-            macds = stlp_emas - ltlp_emas                # macds
-            semas = self._get_ema(macds, period=9)       # 9-day signal moving average
-            
-            for macd, sema in zip(macds, semas):
-                if macd > sema and crossed is False:
-                    self._buys.append(True)
-                    self._sells.append(False)
-                    crossed = True
-                elif macd < sema and crossed is True:
-                    self._buys.append(False)
-                    self._sells.append(True)
-                    crossed = False
-                else:
-                    self._buys.append(False)
-                    self._sells.append(False)
-        except Exception as error:
-            raise IndicatorException('Could not get macd signal!') from error
-        else:
-            return True
-
+        return macds, signals

@@ -2,29 +2,34 @@ import numpy as np
 import pandas as pd
 import logging
 from datetime import datetime
-import matplotlib.pyplot as plt
 import pandas_datareader as pdr
 from enums.signal import Signal
 from twilio.rest import Client
-from indicators import Indicator, MacdIndicator
 from dateutil.relativedelta import relativedelta
-from common.exceptions import IndicatorException
 from config.credentials import (
     twilio_number, twilio_account_sid, twilio_auth_token
 )
+from indicators import MacdIndicator, RsiIndicator
+from strategies import Strategy, MacdRsiStrategy
+
 
 logger = logging.getLogger('TradeBot')
 
 
 class TradeBot:
-    def __init__(self, indicator: Indicator):
-        self._indicator = indicator
+
+    def __init__(self):
+        self._strategy = None
         self._source = 'yahoo'
 
     @property
-    def indicator(self):
-        return self._indicator
+    def strategy(self):
+        return self._strategy
     
+    @strategy.setter
+    def strategy(self, value: Strategy):
+        self._strategy = value
+
     def get_stock_data(self, ticker: str, start: str, end: str):
         try:
             data = pdr.DataReader(
@@ -37,61 +42,57 @@ class TradeBot:
         else:
             return data
 
-    def get_trade_signal(self, ticker: str):
-        today = datetime.today()
-        six_months_ago = today + relativedelta(months=-6)
-        data = self.get_stock_data(ticker, str(six_months_ago), str(today))
-        if data is None:
-            logger.error(f'No data found for {ticker}')
-            return data
-
-        last_trade = data.to_dict('records')[-1]
+    def get_trade_signal(self):
         try:
-            if self.indicator.execute(data):
-                last_buy_signal = self.indicator.get_buy_signals(last_result=True)
-                last_sell_signal = self.indicator.get_sell_signals(last_result=True)
-            else:
-                raise RuntimeError(f'Fail to analyze {ticker} data')
-        except IndicatorException as error:
-            logger.error(f'Fail to get trade signal for ticker symbol: {ticker}!', error)
-            return None
-        else:
-            if last_buy_signal:
-                signal = Signal.BUY
-            elif last_sell_signal:
-                signal = Signal.SELL
-            else:
-                signal = Signal.UNKNOWN
-
-        timestamp = today.strftime('%m/%d/%Y at %H:%M:%S')
-        result = {'Time': timestamp, 'Stock': ticker, 'Signal': signal.name}
-        result.update(last_trade)
-
-        return result
+            signal = self.strategy.execute()
+        except Exception as error:
+            logger.error(f'Fail to get trade signal using {self.strategy.name}!', error)
+            signal = None
+        finally:
+            return signal
 
 
 if __name__ == '__main__':
-    # Client code 
-    ticker = 'STOCK_TICKER_SYMBOL'
-    phone_number = 'A_PHONE_NUMBER'
-    # Initialize with MACD indicator
-    bot = TradeBot(indicator=MacdIndicator())
-    signal = bot.get_trade_signal(ticker)
+    
+    ticker = 'UBER'
+    phone_number = 'PHONE_NUMBER_GOES_HERE'
+    bot = TradeBot()
+    today = datetime.today()
+    six_months_ago = today + relativedelta(months=-6)
 
+    # query stock data
+    data = bot.get_stock_data(ticker, str(six_months_ago), str(today))
+    print(data)
+
+    # indicators
+    macd = MacdIndicator(data)
+    rsi = RsiIndicator(data)
+
+    # set strategy
+    bot.strategy = MacdRsiStrategy(macd, rsi)
+    signal = bot.get_trade_signal()
+    
+    result = {
+        'Time': today.strftime('%m/%d/%Y at %H:%M:%S'),
+        'Stock': ticker,
+        'Signal': signal.name,
+        'Price': round(data['Close'][-1], 3)
+    }
+    
     message = ""
-    for k, v in signal.items():
+    for k, v in result.items():
         message += f'{k}: {v} \n'
 
+    print(message)
+
     # Send signal messages via SMS
-    try:
-        client = Client(twilio_account_sid, twilio_auth_token)
-        client.messages.create(
-            body=message,
-            from_=twilio_number,
-            to=phone_number
-        )
-    except Exception as error:
-        print(f'Fail to send text message to {phone_number}!', error)
-    else:
-        print(message)
-        print('message sent!')
+    client = Client(twilio_account_sid, twilio_auth_token)
+    client.messages.create(
+        body=message,
+        from_=twilio_number,
+        to=phone_number
+    )
+
+    print('message sent!')
+
+
