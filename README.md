@@ -25,7 +25,7 @@ Jeff Willits  jnwillits.com
 1. Update the bot.py file with your email(s) and stock ticker symbols.
 ```
  tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF']
-    to_email = """ your_email_1@gmail.com;
+ to_email = """ your_email_1@gmail.com;
                    your_email_2@gmail.com """ 
 ```
 2. Compile the bot.py file into an executible file.
