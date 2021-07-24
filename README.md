@@ -1,23 +1,27 @@
 
-An awesome trade bot that sends trading signals to your phone.
+
+An awesome trade bot that sends trading signals to your email.
 
 ## Setup
-1. Signup for Twilio account at https://www.twilio.com/
-2. Get an Account SID and Token, insert into config/credentials.py
+1. Update the bot.py file with your email(s) and stock ticker symbols.
 ```
-twilio_number = 'TWILIO_PHONE_NUMBER'
-twilio_account_sid = 'TWILIO_ACCOUNT_SID'
-twilio_auth_token = 'TWILIO_AUTH_TOKEN'
+ tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF']
+    to_email = """ your_email_1@gmail.com;
+                   your_email_2@gmail.com """ 
 ```
-3. Update the bot.py file with your phone number and the stock ticker symbol
+2. Compile the bot.py file into an executible file.
 ```
-ticker = 'STOCK_TICKER_SYMBOL'
-phone_number = 'A_PHONE_NUMBER'
+xxxxx
+
 ```
+3. Use a scheduler, such as MicroSoft Scheduler to run bot.ext daily.
+
+
+
 
 ## Requirements
 +Python 3.7 and above
-+Twilio account
+
 
 ## Installation
 Install the dependencies
@@ -29,3 +33,4 @@ pip install -r requirements.txt
 ```
 $ python bot.py
 ```
+
