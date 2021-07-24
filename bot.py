@@ -88,8 +88,8 @@ def write_message_file(total_message_pass):
 if __name__ == '__main__':
    
     tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF', 'SBNY', 'AMD', 'SQ', 'VMW']
-    to_email = """ jeff.willits@live.com;
-                   jeffrey0056@netscape.net """ 
+    to_email = """ your_email_1@gmail.com;
+                   your_email_2@gmail.com """ 
    
     total_message = ''
     total_log_message = ''
