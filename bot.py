@@ -3,21 +3,24 @@
 Jeff's TradeBot
 This started from a version of TradeBot forked from theryanle/stock-tradingbot on GitHub. It uses MACD and
 RSI indicators to provide clear buy/sell/hold singles that may be useful for swing trading of stocks.
+
 My changes include:
     1. Adding functionally to allow signals of multiple ticker symbols.
     2. Changing output from SMS messages via Twillo to emails.
-    3. Method in retrieving stock data.
-    4. Adding timing to provide daily output via email.
+    3. Altered method of retrieving stock data.
+    4. Added feaure to prevent output on a non-trading day when the signal message does not change.
+
 I plan to add a graphic interface and include a database for an output log to use for testing the stratgy.
 Perhaps I will allow multiple accounts so different stock ticker lists can be stored in the database and 
 relevant output can be sent to different emails. I may also restrict the program from sending emails after
-non-trading days and add alerts when signals change.
+non-trading days and add alerts when signals change. The intended usage of this program is to execute a 
+compiled version daily from a scheduler.
 
 Jeff Willits  jnwillits.com
 """
 
-import time
 import win32com.client as win32
+import json
 import sys
 import os
 from pathlib import Path
@@ -36,17 +39,17 @@ from pandas_datareader import data as web
 logger = logging.getLogger('TradeBot')
 
 class TradeBot:
-
     def __init__(self):
         self._strategy = None
 
     @property
     def strategy(self):
         return self._strategy
-    
+
     @strategy.setter
     def strategy(self, value: Strategy):
         self._strategy = value
+
 
     def get_stock_data(self, ticker: str, start: str, end: str):
         try:
@@ -56,6 +59,7 @@ class TradeBot:
             return None
         else:
             return data
+
 
     def get_trade_signal(self):
         try:
@@ -67,38 +71,53 @@ class TradeBot:
             return signal
 
 
-if __name__ == '__main__':
-    tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF', 'SBNY', 'AMD', 'SQ', 'VMW']
-    total_message = ''
-    to_email = """ jeff.willits@live.com;
-                   jeffrey0056@netscape.net """ 
-    starttime=time.time()
-    interval=86400 # 24 hour interval
-    while True:
-        for i in range (0, len(tickers)):
-            ticker = tickers[i]
-            bot = TradeBot()
-            today = datetime.today()
-            six_months_ago = today + relativedelta(months=-6)
-            data = bot.get_stock_data(ticker, str(six_months_ago), str(today))
-            # indicators
-            macd = MacdIndicator(data)
-            rsi = RsiIndicator(data)
-            # strategy
-            bot.strategy = MacdRsiStrategy(macd, rsi)
-            signal = bot.get_trade_signal()
-            # output
-            message = ''
-            message = f"{signal.name}  {ticker}  @  {round(data['Close'][-1], 3)}"
-            total_message = total_message + '\n' + message    
-        # mail
-        outlook = win32.gencache.EnsureDispatch('Outlook.Application')
-        new_mail = outlook.CreateItem(0)
-        new_mail.Subject = f"Jeff's TradeBot Signals for {date.today():%m/%d/%y}"
-        new_mail.Body = total_message
-        new_mail.To = to_email
-        new_mail.Send()
+def read_message_file():
+    if os.path.isfile('last_message.json'):
+        with open('last_message.json') as f_obj:
+            return json.load(f_obj)
+    
 
-        time.sleep(interval - ((time.time() - starttime) % interval))
+def write_message_file(total_message_pass):
+    with open('last_message.json', 'w') as f_obj:
+        json.dump(total_message_pass, f_obj)
+
+
+
+if __name__ == '__main__':
+   
+    tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF', 'SBNY', 'AMD', 'SQ', 'VMW']
+    to_email = """ your_email_1@gmail.com;
+                   your_email_2@@netscape.net """ 
+   
+    total_message = ''
+    for i in range (0, len(tickers)):
+        ticker = tickers[i]
+        bot = TradeBot()
+        today = datetime.today()
+        six_months_ago = today + relativedelta(months=-6)
+        data = bot.get_stock_data(ticker, str(six_months_ago), str(today))
+        # indicators
+        macd = MacdIndicator(data)
+        rsi = RsiIndicator(data)
+        # strategy
+        bot.strategy = MacdRsiStrategy(macd, rsi)
+        signal = bot.get_trade_signal()
+        # output
+        message = ''
+        message = f"{signal.name}  {ticker}  @  {round(data['Close'][-1], 3)}"
+        total_message = total_message + '\n' + message 
+        # Abort output if no change in message - nontrading day.
+        if total_message == read_message_file():
+            sys.exit()
+        else:
+            write_message_file(total_message)
+
+    # mail
+    outlook = win32.gencache.EnsureDispatch('Outlook.Application')
+    new_mail = outlook.CreateItem(0)
+    new_mail.Subject = f"Jeff's TradeBot Signals for {date.today():%m/%d/%y}"
+    new_mail.Body = total_message
+    new_mail.To = to_email
+    new_mail.Send()
     sys.exit()
     
