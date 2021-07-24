@@ -38,7 +38,7 @@ If you have problems with this, the easiest solution can be to find pyinstaller.
 and place a copy in the same folder as the program files.
 
 ```
-3. Use a scheduler, such as Microsoft Scheduler to run bot.ext daily.
+3. Use a scheduler, such as Windows Task Scheduler to run bot.ext daily.
 
 
 
