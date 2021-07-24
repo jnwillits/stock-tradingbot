@@ -20,6 +20,7 @@ this program is to execute a compiled version daily from a scheduler.
 Jeff Willits  jnwillits.com
 
 
+
 ## Setup
 1. Update the bot.py file with your email(s) and stock ticker symbols.
 ```
@@ -33,11 +34,11 @@ You can pip install PyInstaller and use the command:
 
 pyinstaller bot.py --onefile
 
-If you have problems with this, the easiest solution can be to find pyinstaller.exe on
-your drive and place a copy in the same folder as the program files.
+If you have problems with this, the easiest solution can be to find pyinstaller.exe on your drive and place a copy in the same folder as the program files.
 
 ```
 3. Use a scheduler, such as Microsoft Scheduler to run bot.ext daily.
+
 
 
 
@@ -45,11 +46,13 @@ your drive and place a copy in the same folder as the program files.
 +Python 3.7 and above
 
 
+
 ## Installation
 Install the dependencies
 ```
 pip install -r requirements.txt
 ```
+
 
 ## Usage
 ```
