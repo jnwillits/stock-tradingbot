@@ -14,7 +14,7 @@ An awesome trade bot that sends trading signals to your email.
 xxxxx
 
 ```
-3. Use a scheduler, such as MicroSoft Scheduler to run bot.ext daily.
+3. Use a scheduler, such as Microsoft Scheduler, to run bot.exe daily.
 
 
 
