@@ -1,20 +1,22 @@
 # !/usr/bin/env python
 """
 Jeff's TradeBot
-This started from a version of TradeBot forked from theryanle/stock-tradingbot on GitHub. It uses MACD and
-RSI indicators to provide clear buy/sell/hold singles that may be useful for swing trading of stocks.
 
-My changes include:
+Here is an awesome trade bot that sends trading signals to your email. The project started from a
+version of TradeBot I forked from theryanle/stock-tradingbot on GitHub. It uses MACD and RSI
+indicators to provide buy/sell/hold signals for trading of stocks.
+
+My changes and enhancements include:
+
     1. Adding functionally to allow signals of multiple ticker symbols.
     2. Changing output from SMS messages via Twillo to emails.
-    3. Altered method of retrieving stock data.
-    4. Added feaure to prevent output on a non-trading day when the signal message does not change.
+    3. Providing an altered method of retrieving stock data.
+    4. Adding a feaure to prevent output on a non-trading day.
+    5. Added a log file for the output to facilitate back-testing of the signals.
 
-I plan to add a graphic interface and include a database for an output log to use for testing the stratgy.
-Perhaps I will allow multiple accounts so different stock ticker lists can be stored in the database and 
-relevant output can be sent to different emails. I may also restrict the program from sending emails after
-non-trading days and add alerts when signals change. The intended usage of this program is to execute a 
-compiled version daily from a scheduler.
+I may add a graphic interface and allow multiple accounts so different stock ticker lists can be
+stored in a database and relevant output can be sent to different emails. The intended usage of
+this program is to execute a compiled version daily from a scheduler.
 
 Jeff Willits  jnwillits.com
 """
@@ -86,10 +88,11 @@ def write_message_file(total_message_pass):
 if __name__ == '__main__':
    
     tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF', 'SBNY', 'AMD', 'SQ', 'VMW']
-    to_email = """ your_email_1@gmail.com;
-                   your_email_2@@netscape.net """ 
+    to_email = """ jeff.willits@live.com;
+                   jeffrey0056@netscape.net """ 
    
     total_message = ''
+    total_log_message = ''
     for i in range (0, len(tickers)):
         ticker = tickers[i]
         bot = TradeBot()
@@ -102,16 +105,26 @@ if __name__ == '__main__':
         # strategy
         bot.strategy = MacdRsiStrategy(macd, rsi)
         signal = bot.get_trade_signal()
+        
         # output
         message = ''
-        message = f"{signal.name}  {ticker}  @  {round(data['Close'][-1], 3)}"
+        formatted_close = "{:.2f}".format(round(data['Close'][-1], 2))
+        message = f"{signal.name}  {ticker}  @  {formatted_close}"
         total_message = total_message + '\n' + message 
-        # Abort output if no change in message - nontrading day.
-        if total_message == read_message_file():
-            sys.exit()
-        else:
-            write_message_file(total_message)
 
+        log_message = ''
+        log_message = f"{date.today():%m/%d/%y},{ticker},{formatted_close},{signal.name}\n"
+        total_log_message = total_log_message + log_message
+
+    # Abort output if no change in message - nontrading day.
+    if total_message == read_message_file():
+        sys.exit()
+    else:
+        write_message_file(total_message)
+        with open('historical_log.txt', 'a') as f_obj:
+          f_obj.write(total_log_message)
+        f_obj.close()    
+    
     # mail
     outlook = win32.gencache.EnsureDispatch('Outlook.Application')
     new_mail = outlook.CreateItem(0)
@@ -119,5 +132,5 @@ if __name__ == '__main__':
     new_mail.Body = total_message
     new_mail.To = to_email
     new_mail.Send()
+
     sys.exit()
-    
