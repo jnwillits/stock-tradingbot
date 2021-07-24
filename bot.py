@@ -16,7 +16,8 @@ My changes and enhancements include:
 
 I may add a graphic interface and allow multiple accounts so different stock ticker lists can be
 stored in a database and relevant output can be sent to different emails. The intended usage of
-this program is to execute a compiled version daily from a scheduler.
+this program is to execute a compiled version daily from Windows Task Scheduler or something
+similar.
 
 Jeff Willits  jnwillits.com
 """
