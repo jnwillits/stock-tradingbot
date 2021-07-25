@@ -46,7 +46,8 @@ Jeff Willits  jnwillits.com
    with file paths when using the scheduler. I solved this by running botbatch.bat instead of
    bot.exe from the scheduler. Before running the executable, the working directory is
    changed to the folder where the program data files reside. My file "botbatch.bat" is 
-   included with the files, but you will need to revise the path command.
+   included with the files, but you will need to revise the path command. If you leave your
+   computer in sleep mode, be sure to set the scheduler to wake the computer to run the task.
 
 
 ## Requirements
