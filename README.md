@@ -23,36 +23,35 @@ Jeff Willits  jnwillits.com
 
 
 ## Setup
+
 1. Update the bot.py file with your email(s) and stock ticker symbols.
 ```
  tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF']
  to_email = """ your_email_1@gmail.com;
                    your_email_2@gmail.com """ 
 ```
+
 2. Compile the bot.py file into an executible file.
 ```
 You can pip install PyInstaller and use the command:
 
+```
 pyinstaller bot.py --onefile
+```
 
 If you have problems with this, the easiest solution can be to find pyinstaller.exe on your drive
 and place a copy in the same folder as the program files.
 
-```
+
 3. Use a scheduler, such as Windows Task Scheduler to run bot.ext daily. There can be issues 
    with file paths when using the scheduler. I solved this by running botbatch.bat instead of
    bot.exe from the scheduler. Before running the executable, the working directory is
    changed to the folder where the program data files reside. My file "botbatch.bat" is 
    included with the files, but you will need to revise the path command.
 
-```
-
-
-
 
 ## Requirements
 +Python 3.7 and above
-
 
 
 ## Installation
@@ -60,7 +59,6 @@ Install the dependencies
 ```
 pip install -r requirements.txt
 ```
-
 
 ## Usage
 ```
