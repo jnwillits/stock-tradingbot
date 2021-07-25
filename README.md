@@ -35,11 +35,11 @@ Jeff Willits  jnwillits.com
    command:
 
 ```
-pyinstaller bot.py --onefile
+   pyinstaller bot.py --onefile
 ```
 
-If you have problems with this, the easiest solution can be to find pyinstaller.exe on your drive
-and place a copy in the same folder as the program files.
+   If you have problems with this, the easiest solution can be to find pyinstaller.exe on your drive
+   and place a copy in the same folder as the program files.
 
 
 3. Use a scheduler, such as Windows Task Scheduler to run bot.ext daily. There can be issues 
@@ -56,10 +56,10 @@ and place a copy in the same folder as the program files.
 ## Installation
 Install the dependencies
 ```
-pip install -r requirements.txt
+  pip install -r requirements.txt
 ```
 
 ## Usage
 ```
-$ python bot.py
+  $ python bot.py
 ```
