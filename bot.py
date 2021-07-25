@@ -16,8 +16,8 @@ My changes and enhancements include:
 
 I may add a graphic interface and allow multiple accounts so different stock ticker lists can be
 stored in a database and relevant output can be sent to different emails. The intended usage of
-this program is to execute a compiled version daily from Windows Task Scheduler or something
-similar.
+this program is to execute a compiled version daily from a scheduler such as Windows Task 
+Scheduler.
 
 Jeff Willits  jnwillits.com
 """
@@ -89,8 +89,8 @@ def write_message_file(total_message_pass):
 if __name__ == '__main__':
    
     tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF', 'SBNY', 'AMD', 'SQ', 'VMW']
-    to_email = """ your_email_1@gmail.com;
-                   your_email_2@gmail.com """ 
+    to_email = """ your_email_1@live.com;
+                   your_email_2@netscape.net """ 
    
     total_message = ''
     total_log_message = ''
