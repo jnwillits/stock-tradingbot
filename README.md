@@ -15,7 +15,8 @@ My changes and enhancements include:
 
 I may add a graphic interface and allow multiple accounts so different stock ticker lists can be
 stored in a database and relevant output can be sent to different emails. The intended usage of
-this program is to execute a compiled version daily from a scheduler.
+this program is to execute a compiled version daily from a scheduler such as Windows Task
+Scheduler.
 
 Jeff Willits  jnwillits.com
 
@@ -38,7 +39,13 @@ If you have problems with this, the easiest solution can be to find pyinstaller.
 and place a copy in the same folder as the program files.
 
 ```
-3. Use a scheduler, such as Windows Task Scheduler to run bot.ext daily.
+3. Use a scheduler, such as Windows Task Scheduler to run bot.ext daily. There can be issues 
+   with file paths when using the scheduler. I solved this by running botbatch.bat instead of
+   bot.exe from the scheduler. Before running the executable, the working directory is
+   changed to the folder where the program data files reside. My file "botbatch.bat" is 
+   included with the files, but you will need to revise the path command.
+
+```
 
 
 
