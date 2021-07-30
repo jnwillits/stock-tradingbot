@@ -19,6 +19,9 @@ stored in a database and relevant output can be sent to different emails. The in
 this program is to execute a compiled version daily from a scheduler such as Windows Task 
 Scheduler.
 
+Having trouble with the email not generating? From PowerShell:
+Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse
+
 Jeff Willits  jnwillits.com
 """
 
@@ -89,8 +92,8 @@ def write_message_file(total_message_pass):
 if __name__ == '__main__':
    
     tickers = ['ICE', 'CBSH', 'JNJ', 'SO', 'NVDA', 'ARKF', 'SBNY', 'AMD', 'SQ', 'VMW']
-    to_email = """ your_email_1@live.com;
-                   your_email_2@netscape.net """ 
+    to_email = """ jeff.willits@live.com;
+                   jeffrey0056@netscape.net """ 
    
     total_message = ''
     total_log_message = ''
