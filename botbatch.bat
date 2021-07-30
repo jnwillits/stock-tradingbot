@@ -1,2 +1,3 @@
 cd C:\Users\jeffw\Documents\code\jeffstradebot
-bot
+Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse
+python bot.py
