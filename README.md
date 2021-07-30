@@ -39,7 +39,13 @@ Jeff Willits  jnwillits.com
 ```
 
     If you have problems with this, the easiest solution can be to find pyinstaller.exe on your drive
-    and place a copy in the same folder as the program files.
+    and place a copy in the same folder as the program files. Otherwise, it is not essential to run 
+    this from a compiled file. You can run the script from python as:
+
+    
+```
+   python bot.py
+```
 
 
 3. Use a scheduler, such as Windows Task Scheduler to run bot.ext daily. There can be issues 
@@ -64,3 +70,14 @@ Install the dependencies
 ```
   $ python bot.py
 ```
+
+
+## Having trouble with the email not generating? From PowerShell:
+```
+Remove-Item -path $env:LOCALAPPDATA\Temp\gen_py -recurse
+```
+
+I run this from a batch file and added this command to botbatch.bat. When running this 
+command in a batch file from the Windows Task Scheduler, be sure to configure the
+Scheduler for Windows 10, instead of an earlier version and have Powershell as the
+default command prompt.
